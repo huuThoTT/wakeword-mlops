@@ -1,8 +1,5 @@
 [core]
-    remote = gdrive_remote
-['remote "local_remote"']
-    url = /Users/thaisonmap/dvc-storage
-['remote "gdrive_remote"']
-    url = gdrive://1k9oksh987ABaV2_tJo7kkRoL4SgJ7xML
-    gdrive_use_service_account = true
-    gdrive_service_account_json_file_path = ../gdrive_credentials.json
+    remote = origin
+['remote "origin"']
+    url = s3://dvc
+    endpointurl = https://dagshub.com/huuThoTT/wakeword-mlops.s3
