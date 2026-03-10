@@ -22,13 +22,29 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install dvc scikit-learn librosa soundfile numpy pyyaml
+          pip install dvc dvc-s3 scikit-learn librosa soundfile numpy pyyaml
 
       - name: Setup CML
         uses: iterative/setup-cml@v2
 
+      - name: Pull data from DagsHub
+        env:
+          DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
+        run: |
+          dvc remote modify origin --local access_key_id $DAGSHUB_TOKEN
+          dvc remote modify origin --local secret_access_key $DAGSHUB_TOKEN
+          dvc pull
+
       - name: Run DVC pipeline
         run: dvc repro
+
+      - name: Push results
+        env:
+          DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
+        run: |
+          dvc remote modify origin --local access_key_id $DAGSHUB_TOKEN
+          dvc remote modify origin --local secret_access_key $DAGSHUB_TOKEN
+          dvc push
 
       - name: Create CML Report
         env:
@@ -38,7 +54,18 @@ jobs:
           echo "**Commit:** ${{ github.sha }}" >> report.md
           echo "**Run:** #${{ github.run_number }}" >> report.md
           echo "" >> report.md
-          echo "### Metrics" >> report.md
+          echo "### 🏋️ Train Metrics" >> report.md
+          python3 -c "
+          import json
+          m = json.load(open('metrics/metrics.json'))
+          print('| Metric | Value |')
+          print('|--------|-------|')
+          for k,v in m.items():
+              if k != 'confusion_matrix':
+                  print(f'| {k} | **{v}** |')
+          " >> report.md
+          echo "" >> report.md
+          echo "### 🎯 Eval Metrics" >> report.md
           python3 -c "
           import json
           m = json.load(open('metrics/eval_metrics.json'))
@@ -49,7 +76,7 @@ jobs:
                   print(f'| {k} | **{v}** |')
           " >> report.md
           echo "" >> report.md
-          echo "### Metrics Diff" >> report.md
+          echo "### 🔄 Metrics Diff" >> report.md
           dvc metrics diff HEAD~1 HEAD --md >> report.md 2>/dev/null || echo "_Lần train đầu tiên_" >> report.md
           cml comment create report.md
 
