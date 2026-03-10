@@ -37,10 +37,10 @@ jobs:
         run: |
           dvc remote modify origin --local access_key_id $DAGSHUB_TOKEN
           dvc remote modify origin --local secret_access_key $DAGSHUB_TOKEN
-          dvc pull
+          dvc pull data/positive.dvc data/negative.dvc
 
       - name: Run DVC pipeline
-        run: dvc repro
+        run: dvc repro --no-commit
 
       - name: Push results
         env:
@@ -80,7 +80,7 @@ jobs:
                   print(f'| {k} | **{v}** |')
           " >> report.md
           echo "" >> report.md
-          echo "### 🔄 Metrics Diff" >> report.md
+          echo "### �� Metrics Diff" >> report.md
           dvc metrics diff HEAD~1 HEAD --md >> report.md 2>/dev/null || echo "_Lần train đầu tiên_" >> report.md
           cml comment create report.md
 
