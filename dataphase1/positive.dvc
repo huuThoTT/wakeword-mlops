@@ -1,0 +1,6 @@
+outs:
+- md5: ec97018bbcea98fefe563b7dfeb14fca.dir
+  size: 4173404
+  nfiles: 101
+  hash: md5
+  path: positive
