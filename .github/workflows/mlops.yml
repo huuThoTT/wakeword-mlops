@@ -1,0 +1,60 @@
+name: Wake Word MLOps Pipeline
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main]
+
+jobs:
+  train-and-report:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install dvc scikit-learn librosa soundfile numpy pyyaml
+
+      - name: Setup CML
+        uses: iterative/setup-cml@v2
+
+      - name: Run DVC pipeline
+        run: dvc repro
+
+      - name: Create CML Report
+        env:
+          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "## 📊 Wake Word MLOps Report" > report.md
+          echo "**Commit:** ${{ github.sha }}" >> report.md
+          echo "**Run:** #${{ github.run_number }}" >> report.md
+          echo "" >> report.md
+          echo "### Metrics" >> report.md
+          python3 -c "
+          import json
+          m = json.load(open('metrics/eval_metrics.json'))
+          print('| Metric | Value |')
+          print('|--------|-------|')
+          for k,v in m.items():
+              if k != 'confusion_matrix':
+                  print(f'| {k} | **{v}** |')
+          " >> report.md
+          echo "" >> report.md
+          echo "### Metrics Diff" >> report.md
+          dvc metrics diff HEAD~1 HEAD --md >> report.md 2>/dev/null || echo "_Lần train đầu tiên_" >> report.md
+          cml comment create report.md
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: metrics-run-${{ github.run_number }}
+          path: metrics/

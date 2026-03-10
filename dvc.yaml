@@ -1,0 +1,25 @@
+stages:
+  train:
+    cmd: python src/train.py
+    deps:
+      - src/train.py
+      - data/positive
+      - data/negative
+    outs:
+      - models/model.pkl
+      - models/scaler.pkl
+    metrics:
+      - metrics/metrics.json:
+          cache: false
+
+  evaluate:
+    cmd: python src/evaluate.py
+    deps:
+      - src/evaluate.py
+      - models/model.pkl
+      - models/scaler.pkl
+      - data/positive
+      - data/negative
+    metrics:
+      - metrics/eval_metrics.json:
+          cache: false
