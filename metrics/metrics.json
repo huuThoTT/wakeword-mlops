@@ -1,0 +1,9 @@
+{
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1_score": 1.0,
+  "train_samples": 160,
+  "test_samples": 41,
+  "positive_samples": 101,
+  "negative_samples": 100
+}

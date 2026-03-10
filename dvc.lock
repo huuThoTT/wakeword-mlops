@@ -1,0 +1,62 @@
+schema: '2.0'
+stages:
+  train:
+    cmd: python src/train.py
+    deps:
+    - path: data/negative
+      hash: md5
+      md5: 3473a0acf69714196d3fbda6ea89b3f9.dir
+      size: 4583984
+      nfiles: 100
+    - path: data/positive
+      hash: md5
+      md5: ec97018bbcea98fefe563b7dfeb14fca.dir
+      size: 4173404
+      nfiles: 101
+    - path: src/train.py
+      hash: md5
+      md5: 0ee334ed24663b971c2e91f79097ed6d
+      size: 2365
+    outs:
+    - path: metrics/metrics.json
+      hash: md5
+      md5: 006a505bc9ce678c7e5b218f9093d2db
+      size: 158
+    - path: models/model.pkl
+      hash: md5
+      md5: 22bee364fdd3c4d826850af09642a3ca
+      size: 135359
+    - path: models/scaler.pkl
+      hash: md5
+      md5: 59400b6dfb095058228ba08440edee08
+      size: 1385
+  evaluate:
+    cmd: python src/evaluate.py
+    deps:
+    - path: data/negative
+      hash: md5
+      md5: 3473a0acf69714196d3fbda6ea89b3f9.dir
+      size: 4583984
+      nfiles: 100
+    - path: data/positive
+      hash: md5
+      md5: ec97018bbcea98fefe563b7dfeb14fca.dir
+      size: 4173404
+      nfiles: 101
+    - path: models/model.pkl
+      hash: md5
+      md5: 22bee364fdd3c4d826850af09642a3ca
+      size: 135359
+    - path: models/scaler.pkl
+      hash: md5
+      md5: 59400b6dfb095058228ba08440edee08
+      size: 1385
+    - path: src/evaluate.py
+      hash: md5
+      md5: c0669eae838d06d71ec619f84a9c2c6b
+      size: 2259
+    outs:
+    - path: metrics/eval_metrics.json
+      hash: md5
+      md5: 5e81bc8267adeba49426785ebaf1d2b4
+      size: 209
