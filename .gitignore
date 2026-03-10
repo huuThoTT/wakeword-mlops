@@ -6,3 +6,4 @@ data/negative/
 models/
 speech_commands*
 *.tar.gz
+gdrive_credentials.json
