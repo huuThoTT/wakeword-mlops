@@ -1,6 +1,7 @@
 train:
   n_estimators: 100
-  threshold: 0.85
+  threshold: 0.5
   n_mfcc: 40
   sample_rate: 16000
   test_split: 0.2
+
